@@ -1,36 +1,131 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 世田谷ホワイトニング — Webアプリ（Phase 0）
 
-## Getting Started
+オンライン診療から始めるホームホワイトニングサービスのWebアプリです。
+[バックエンド構築ロードマップ](https://claude.ai/code/artifact/73237527-d822-4441-be64-f907c9b3bde8) の Phase 0（土台づくり）が完了した状態のプロジェクトです。
 
-First, run the development server:
+このREADMEは、**エンジニアではない方**が上から順番に進められるように書いています。
+コマンドは黒い画面（ターミナル）に入力するものです。慌てず1つずつ進めてください。
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 今の状態でできること
+
+- トップページ（LP）がこのプロジェクトの中に組み込まれている
+- `/api/health` にアクセスすると、Supabase（データベース）に接続できているかを確認できる
+- データベースの設計図（`supabase/schema.sql`）が用意されている
+
+まだできないこと（Phase 1以降で作ります）：会員登録・ログイン、管理画面、決済、実際のオンライン診療との連携。
+
+---
+
+## 必要なアカウント（すべて無料枠でOK）
+
+1. **GitHub** — コードを保管する場所。https://github.com
+2. **Supabase** — データベース・ログイン機能。https://supabase.com
+3. **Vercel** — Webサイトの公開（ホスティング）。https://vercel.com
+
+3つとも、GitHubアカウントでログインすると連携がスムーズです。まずGitHubのアカウントを作ってから、Supabase・Vercelは「Continue with GitHub」で登録するのがおすすめです。
+
+---
+
+## 手順1: このプロジェクトをGitHubに置く
+
+1. GitHubにログインし、右上の「+」→「New repository」を選ぶ
+2. リポジトリ名を決める（例: `setagaya-whitening`）。Public/Privateはどちらでも良いが、迷ったら **Private** を選ぶ
+3. 「Create repository」を押す（READMEなどは追加しなくてOK）
+4. 作成後の画面に表示される「…or push an existing repository from the command line」のコマンドを、このプロジェクトのフォルダ内で順番に実行する
+
+   ```bash
+   git remote add origin https://github.com/<あなたのユーザー名>/<リポジトリ名>.git
+   git branch -M main
+   git add .
+   git commit -m "Phase 0: プロジェクトの土台"
+   git push -u origin main
+   ```
+
+   ※ `git add .` の際、`.env.local`（実際のパスワードのような値が入るファイル）は `.gitignore` によって自動的に除外されるので安心してください。
+
+---
+
+## 手順2: Supabaseプロジェクトを作る
+
+1. https://supabase.com にログインし、「New project」を押す
+2. プロジェクト名（例: `setagaya-whitening`）、データベースのパスワード（自動生成でOK、忘れないよう控えておく）、リージョンは `Northeast Asia (Tokyo)` を選んで作成する
+3. 作成には1〜2分かかります。完了したら左メニューの **SQL Editor** を開く
+4. 「New query」を押し、このプロジェクト内の `supabase/schema.sql` の中身を全部コピーして貼り付け、右下の「Run」を押す
+   - 実行してエラーが出なければOK（何行か「Success」と表示されます）
+   - このSQLは再実行しても安全なので、あとで内容を更新した際も同じ手順でOKです
+5. 左メニューの **Project Settings → API** を開き、次の3つの値を控える
+   - **Project URL**（例: `https://xxxxxxxxxxxx.supabase.co`）
+   - **anon public** キー
+   - **service_role** キー（こちらは絶対に人に見せたり、GitHubに載せたりしないこと）
+
+---
+
+## 手順3: 環境変数を設定する（ローカルで動かす場合）
+
+1. プロジェクトのフォルダで `.env.local.example` をコピーして `.env.local` という名前のファイルを作る
+
+   ```bash
+   cp .env.local.example .env.local
+   ```
+
+2. `.env.local` を開き、手順2で控えた3つの値を貼り付ける
+
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=https://xxxxxxxxxxxx.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   SUPABASE_SERVICE_ROLE_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   ```
+
+3. 依存パッケージをインストールして、開発サーバーを起動する
+
+   ```bash
+   npm install
+   npm run dev
+   ```
+
+4. ブラウザで以下の2つを開いて確認する
+   - http://localhost:3000 — トップページ（LP）が表示されればOK
+   - http://localhost:3000/api/health — 次のような表示になればOK
+     ```json
+     { "ok": true, "doctorStatus": { "id": 1, "state": "offline", "doctor_name": null, "updated_at": "…" } }
+     ```
+     `"ok": false` と表示された場合は、`.env.local` の値が正しいか、手順2のSQLを実行済みかを見直してください。エラーメッセージの `hint` に次にすることが書かれています。
+
+---
+
+## 手順4: Vercelで公開する
+
+1. https://vercel.com にログインし、「Add New… → Project」を選ぶ
+2. 手順1でGitHubに置いたリポジトリを選んで「Import」する
+3. 「Environment Variables」の欄に、手順2で控えた3つの値を登録する（キー名は `.env.local` と同じにする）
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+4. 「Deploy」を押す。1〜2分待つと公開用のURL（例: `https://setagaya-whitening.vercel.app`）が発行される
+5. 発行されたURLと `/api/health` の両方を開いて、手順3と同じように確認する
+
+これでPhase 0は完了です。インターネット上に実際にトップページが公開され、データベースとも接続できている状態になります。
+
+---
+
+## このプロジェクトの中身
+
+```
+app/
+  page.tsx          … トップページ（LP）
+  layout.tsx        … 全ページ共通の設定（フォント・メタ情報など）
+  globals.css       … LP全体のデザイン（色・フォント・レイアウト）
+  api/health/       … Supabase接続確認用のAPI
+components/
+  SignBoardDemo.tsx … 「今すぐ診療」機能の説明用デモ（クリックで状態が切り替わる）
+lib/supabase/
+  client.ts         … ブラウザから使うSupabase接続（今後の会員ログイン等で使用）
+  server.ts         … サーバーから使うSupabase接続（ログイン中の会員として読み書き）
+  admin.ts          … 管理者権限のSupabase接続（/admin機能などサーバー専用。絶対にブラウザに渡さない）
+proxy.ts            … 会員のログインセッションを維持する仕組み（Phase 1から本格的に使用）
+supabase/schema.sql … データベースの設計図（patients / doctor_status / consultations / orders）
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 次のフェーズ
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+バックエンド構築ロードマップに沿って、Phase 1（会員登録とステータス表示）から続けます。次にAIとの会話で「Phase 1から始めよう」と伝えれば続きに着手できます。
