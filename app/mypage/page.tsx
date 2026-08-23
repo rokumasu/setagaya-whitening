@@ -6,7 +6,24 @@ import {
   PATIENT_STATUS_LABEL,
   type PatientStatus,
 } from "@/lib/patientStatus";
+import {
+  PLANS,
+  formatConcentrationMix,
+  type ConcentrationMixItem,
+  type Plan,
+} from "@/lib/pricing";
 import { signOut } from "./actions";
+
+const PAYMENT_STATUS_LABEL: Record<string, string> = {
+  pending: "決済待ち",
+  paid: "支払い完了",
+  failed: "失敗",
+};
+
+const SHIPPING_STATUS_LABEL: Record<string, string> = {
+  preparing: "発送準備中",
+  shipped: "発送済み",
+};
 
 export default async function MyPage() {
   const supabase = await createClient();
@@ -34,6 +51,12 @@ export default async function MyPage() {
 
   const status = patient.status as PatientStatus;
 
+  const { data: orders } = await supabase
+    .from("orders")
+    .select("id, plan, concentration_mix, amount, payment_status, shipping_status, created_at")
+    .eq("patient_id", user.id)
+    .order("created_at", { ascending: false });
+
   return (
     <main className="auth-page">
       <div className="auth-shell">
@@ -58,6 +81,40 @@ export default async function MyPage() {
                 オンライン診療を受ける
               </Link>
             </div>
+          )}
+
+          {status === "approved" && (
+            <div className="auth-form">
+              <Link href="/order" className="btn btn-primary">
+                商品を購入する
+              </Link>
+            </div>
+          )}
+
+          {orders && orders.length > 0 && (
+            <>
+              <h2 className="admin-section-title">購入履歴</h2>
+              <table className="admin-detail-table">
+                <tbody>
+                  {orders.map((order) => (
+                    <tr key={order.id}>
+                      <th>
+                        {new Date(order.created_at).toLocaleDateString("ja-JP")}
+                      </th>
+                      <td>
+                        {PLANS[order.plan as Plan]?.label ?? `${order.plan}本`}
+                        （{formatConcentrationMix(order.concentration_mix as ConcentrationMixItem[])}）
+                        <br />
+                        {order.amount.toLocaleString()}円 ・{" "}
+                        {PAYMENT_STATUS_LABEL[order.payment_status] ?? order.payment_status}
+                        {order.payment_status === "paid" &&
+                          ` ・ ${SHIPPING_STATUS_LABEL[order.shipping_status] ?? order.shipping_status}`}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
           )}
 
           <div className="auth-form">

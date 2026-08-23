@@ -90,6 +90,12 @@ export default async function AdminDashboardPage({
             </Link>
           </div>
 
+          <div className="auth-form">
+            <Link href="/admin/orders" className="btn btn-ghost">
+              注文一覧・発送管理
+            </Link>
+          </div>
+
           <form action={adminLogout} className="auth-form">
             <button type="submit" className="btn btn-ghost">
               ログアウト
