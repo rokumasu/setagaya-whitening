@@ -24,8 +24,9 @@ koichiroさんには**専門用語を避けて、日本語でわかりやすく*
 ## 今の状況(2026年8月時点)
 
 - Phase 0(プロジェクトの土台づくり)・Phase 1(会員登録とステータス表示)・
-  Phase 2(今すぐ診療サイン)が完了し、本番環境(Vercel)で動作確認済み
-- 次はPhase 3(診療から承認まで)
+  Phase 2(今すぐ診療サイン)・Phase 3(診療から承認まで)が完了し、
+  本番環境(Vercel)で動作確認済み
+- 次はPhase 4(購入とStripe決済)
 - 詳しい手順・実装内容は `README.md` に非エンジニア向けに書いてある。作業の際は必ずこれを参照し、
   進んだら `README.md` の該当箇所を更新すること
 - 事業の基本仕様は `docs/master-prompt.md`(マスタープロンプト v2.0)に保管している。
@@ -40,13 +41,16 @@ koichiroさんには**専門用語を避けて、日本語でわかりやすく*
 - 認証: Supabase Auth(メール＋パスワード。確認メール・パスワード再設定は標準のメールリンクを使用。
   マスタープロンプトのワンタイムコード案から変更した経緯は `docs/master-prompt.md` 参照)
 - 決済: Stripe(未実装。導入時は`concentration`などの個別情報はStripeに渡さず自社DBのみで管理する設計)
-- オンライン診療: Zoom(MVPでは固定リンクでよい)
+- オンライン診療: Zoom(MVPでは固定リンク。`NEXT_PUBLIC_ZOOM_LINK`環境変数に担当医の
+  個人ミーティングルームURLを設定している。患者画面にそのまま表示されるので公開前提の値)
 - 環境変数: `.env.local.example` を参照。実際の値は `.env.local`(gitには含めない)
 - 主要ファイル:
   - `app/page.tsx` … トップページ
   - `app/api/health/route.ts` … Supabase接続確認用API
   - `app/register/`, `app/login/`, `app/mypage/` など … 会員登録・ログイン・マイページ(Phase 1)
-  - `app/admin/` … 管理画面。`admin/login`はログイン、`admin/(dashboard)`が本体(Phase 2)。
+  - `app/consultation/` … 患者向けのオンライン診療案内ページ(Zoomリンク案内)(Phase 3)
+  - `app/admin/` … 管理画面。`admin/login`はログイン、`admin/(dashboard)`が本体
+    (受付状況の切り替えはPhase 2、`patients/`配下の会員一覧・診療結果入力はPhase 3)。
     `lib/adminAuth.ts`の固定パスワード(環境変数`ADMIN_PASSWORD`)で保護している
   - `components/ConsultationStatusCard.tsx` … トップページの受付状況表示。Supabase Realtimeで
     `doctor_status`を購読し、管理画面での変更を再読み込みなしで反映する(Phase 2)
@@ -63,8 +67,9 @@ https://claude.ai/code/artifact/73237527-d822-4441-be64-f907c9b3bde8
 - Phase 0: プロジェクトの土台 — 完了
 - Phase 1: 会員登録とステータス表示 — 完了
 - Phase 2: 今すぐ診療サイン — 完了
-- Phase 3: 診療から承認まで(今ここ)
-- Phase 4以降: 決済(Stripe)、運用の仕上げなど
+- Phase 3: 診療から承認まで — 完了
+- Phase 4: 購入とStripe決済(今ここ)
+- Phase 5: 運用の仕上げ
   → 着手前に必ず上記ロードマップ資料で詳細を確認すること(このメモに正確な内容がなければ推測で進めない)
 
 **このプロジェクトの対象範囲は「HPの実装まで」。集客・問い合わせ対応・経理などの事業運営面は対象外。**
