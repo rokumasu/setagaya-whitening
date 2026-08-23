@@ -16,6 +16,9 @@ export default function Home() {
             <a href="#faq">よくある質問</a>
           </nav>
           <div className="nav-cta">
+            <a className="btn btn-ghost btn-sm" href="/mypage">
+              マイページ
+            </a>
             <a className="btn btn-primary btn-sm" href="#pricing">
               オンライン診療を予約
             </a>

@@ -15,20 +15,30 @@
 -- 1. patients — 会員（購入資格の主語）
 -- --------------------------------------------------------------------------
 create table if not exists public.patients (
-  id                uuid primary key references auth.users(id) on delete cascade,
-  name              text,
-  birthdate         date,
-  phone             text,
-  address           jsonb,
-  status            text not null default 'unapproved'
-                      check (status in ('unapproved', 'approved', 'recheck')),
-  last_approved_at  timestamptz,
-  last_purchase_at  timestamptz,
-  created_at        timestamptz not null default now()
+  id                 uuid primary key references auth.users(id) on delete cascade,
+  name               text,
+  birthdate          date,
+  phone              text,
+  address            jsonb,
+  screening_passed   boolean not null default false,
+  status             text not null default 'unapproved'
+                       check (status in ('unapproved', 'approved', 'recheck', 'suspended')),
+  last_approved_at   timestamptz,
+  last_purchase_at   timestamptz,
+  created_at         timestamptz not null default now()
 );
 
 comment on table public.patients is '会員。診療の詳細情報は持たず、購入資格の状態(status)のみを扱う。';
-comment on column public.patients.status is 'unapproved=未承認 / approved=購入可能 / recheck=要再確認';
+comment on column public.patients.screening_passed is '事前スクリーニング（妊娠・授乳中でない／無カタラーゼ症でない／強い知覚過敏がない）に通過したかどうか。詳細な回答内容は保存しない。';
+comment on column public.patients.status is 'unapproved=登録済み・診療前 / approved=購入可能 / recheck=要再確認 / suspended=利用停止';
+
+-- 既存プロジェクトに対する追加分（マスタープロンプトv2.0対応）。
+-- create table if not exists では既存テーブルにカラムは追加されないため、
+-- 既にpatientsテーブルがある環境向けに以下を用意している。新規環境では影響なし。
+alter table public.patients add column if not exists screening_passed boolean not null default false;
+alter table public.patients drop constraint if exists patients_status_check;
+alter table public.patients add constraint patients_status_check
+  check (status in ('unapproved', 'approved', 'recheck', 'suspended'));
 
 -- --------------------------------------------------------------------------
 -- 2. doctor_status — 「今すぐ診療」の唯一の情報源（常に1行のみ）
