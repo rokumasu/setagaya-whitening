@@ -52,6 +52,12 @@ export default async function MyPage() {
             <p>{PATIENT_STATUS_DESCRIPTION[status]}</p>
           </div>
 
+          <div className="auth-form">
+            <Link href="/mypage/edit" className="btn btn-ghost">
+              登録情報を変更する
+            </Link>
+          </div>
+
           <form action={signOut} className="auth-form">
             <button type="submit" className="btn btn-ghost">
               ログアウト
