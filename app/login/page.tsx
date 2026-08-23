@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -15,27 +16,35 @@ export default function LoginPage() {
     e.preventDefault();
     setErrorMessage(null);
 
-    if (!email) {
-      setErrorMessage("メールアドレスを入力してください。");
+    if (!email || !password) {
+      setErrorMessage("メールアドレスとパスワードを入力してください。");
       return;
     }
 
     setSubmitting(true);
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithOtp({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
-      options: { shouldCreateUser: false },
+      password,
     });
     setSubmitting(false);
 
-    if (error) {
-      setErrorMessage(
-        "コードの送信に失敗しました。会員登録がお済みでない場合は、会員登録をお試しください。"
-      );
+    if (error || !data.user) {
+      setErrorMessage("メールアドレスまたはパスワードが正しくありません。");
       return;
     }
 
-    router.push(`/register/verify?email=${encodeURIComponent(email)}`);
+    const { data: patient } = await supabase
+      .from("patients")
+      .select("name")
+      .eq("id", data.user.id)
+      .maybeSingle();
+
+    if (!patient?.name) {
+      router.push("/register/profile");
+    } else {
+      router.push("/mypage");
+    }
   }
 
   return (
@@ -48,7 +57,7 @@ export default function LoginPage() {
         <div className="auth-card">
           <h1>ログイン</h1>
           <p className="auth-lead">
-            登録済みのメールアドレスを入力してください。ログイン用の確認コードをお送りします。
+            登録済みのメールアドレスとパスワードを入力してください。
           </p>
 
           <form onSubmit={handleSubmit} className="auth-form">
@@ -63,6 +72,17 @@ export default function LoginPage() {
               />
             </label>
 
+            <label className="field">
+              <span>パスワード</span>
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="********"
+              />
+            </label>
+
             {errorMessage && <p className="auth-error">{errorMessage}</p>}
 
             <button
@@ -70,10 +90,13 @@ export default function LoginPage() {
               className="btn btn-primary"
               disabled={submitting}
             >
-              {submitting ? "送信中..." : "コードを送信"}
+              {submitting ? "ログイン中..." : "ログイン"}
             </button>
           </form>
 
+          <p className="auth-footnote">
+            <Link href="/forgot-password">パスワードをお忘れの方はこちら</Link>
+          </p>
           <p className="auth-footnote">
             会員登録がまだの方は
             <Link href="/register">こちら</Link>

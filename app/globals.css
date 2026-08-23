@@ -412,6 +412,7 @@ footer{padding:64px 0 48px; border-top:1px solid var(--line);}
 .field input[type="text"],
 .field input[type="email"],
 .field input[type="tel"],
+.field input[type="password"],
 .field input[type="date"]{
   border:1px solid var(--line-strong); border-radius:4px; padding:11px 14px; font-size:15px;
   color:var(--ink); background:var(--porcelain); font-family:var(--font-body);

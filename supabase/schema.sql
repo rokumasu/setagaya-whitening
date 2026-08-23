@@ -40,6 +40,32 @@ alter table public.patients drop constraint if exists patients_status_check;
 alter table public.patients add constraint patients_status_check
   check (status in ('unapproved', 'approved', 'recheck', 'suspended'));
 
+-- 会員登録（supabase.auth.signUp）が完了すると同時に patients 行を自動作成する。
+-- signUp() の options.data に渡した birthdate / screening_passed を受け取って保存する。
+-- security definer なのでRLSの影響を受けず、常に成功する。
+create or replace function public.handle_new_patient()
+returns trigger
+language plpgsql
+security definer set search_path = public
+as $$
+begin
+  insert into public.patients (id, birthdate, screening_passed, status)
+  values (
+    new.id,
+    (new.raw_user_meta_data->>'birthdate')::date,
+    coalesce((new.raw_user_meta_data->>'screening_passed')::boolean, false),
+    'unapproved'
+  )
+  on conflict (id) do nothing;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_patient();
+
 -- --------------------------------------------------------------------------
 -- 2. doctor_status — 「今すぐ診療」の唯一の情報源（常に1行のみ）
 -- --------------------------------------------------------------------------
