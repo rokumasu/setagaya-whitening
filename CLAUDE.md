@@ -23,9 +23,9 @@ koichiroさんには**専門用語を避けて、日本語でわかりやすく*
 
 ## 今の状況(2026年8月時点)
 
-- Phase 0(プロジェクトの土台づくり)・Phase 1(会員登録とステータス表示)が完了し、
-  本番環境(Vercel)で動作確認済み
-- 次はPhase 2(今すぐ診療サイン)
+- Phase 0(プロジェクトの土台づくり)・Phase 1(会員登録とステータス表示)・
+  Phase 2(今すぐ診療サイン)が完了し、本番環境(Vercel)で動作確認済み
+- 次はPhase 3(診療から承認まで)
 - 詳しい手順・実装内容は `README.md` に非エンジニア向けに書いてある。作業の際は必ずこれを参照し、
   進んだら `README.md` の該当箇所を更新すること
 - 事業の基本仕様は `docs/master-prompt.md`(マスタープロンプト v2.0)に保管している。
@@ -46,6 +46,10 @@ koichiroさんには**専門用語を避けて、日本語でわかりやすく*
   - `app/page.tsx` … トップページ
   - `app/api/health/route.ts` … Supabase接続確認用API
   - `app/register/`, `app/login/`, `app/mypage/` など … 会員登録・ログイン・マイページ(Phase 1)
+  - `app/admin/` … 管理画面。`admin/login`はログイン、`admin/(dashboard)`が本体(Phase 2)。
+    `lib/adminAuth.ts`の固定パスワード(環境変数`ADMIN_PASSWORD`)で保護している
+  - `components/ConsultationStatusCard.tsx` … トップページの受付状況表示。Supabase Realtimeで
+    `doctor_status`を購読し、管理画面での変更を再読み込みなしで反映する(Phase 2)
   - `lib/supabase/{client,server,admin}.ts` … 用途別のSupabase接続
   - `supabase/schema.sql` … DB設計(patients / doctor_status / consultations / orders、会員登録トリガー)
   - `proxy.ts` … 会員セッション維持用(Next.js 16の`middleware`相当)
@@ -58,8 +62,9 @@ https://claude.ai/code/artifact/73237527-d822-4441-be64-f907c9b3bde8
 わかっている範囲:
 - Phase 0: プロジェクトの土台 — 完了
 - Phase 1: 会員登録とステータス表示 — 完了
-- Phase 2: 今すぐ診療サイン(今ここ)
-- Phase 3以降: 診療〜承認、決済(Stripe)、管理画面など
+- Phase 2: 今すぐ診療サイン — 完了
+- Phase 3: 診療から承認まで(今ここ)
+- Phase 4以降: 決済(Stripe)、運用の仕上げなど
   → 着手前に必ず上記ロードマップ資料で詳細を確認すること(このメモに正確な内容がなければ推測で進めない)
 
 **このプロジェクトの対象範囲は「HPの実装まで」。集客・問い合わせ対応・経理などの事業運営面は対象外。**
