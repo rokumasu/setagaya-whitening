@@ -1,6 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createStripeClient } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { sendOrderConfirmationEmail } from "@/lib/orderEmails";
+import type { ConcentrationMixItem, Plan } from "@/lib/pricing";
 
 export async function POST(request: NextRequest) {
   const signature = request.headers.get("stripe-signature");
@@ -31,7 +33,7 @@ export async function POST(request: NextRequest) {
         .from("orders")
         .update({ payment_status: "paid" })
         .eq("id", orderId)
-        .select("patient_id")
+        .select("patient_id, plan, concentration_mix, amount")
         .single();
 
       if (order) {
@@ -39,6 +41,25 @@ export async function POST(request: NextRequest) {
           .from("patients")
           .update({ last_purchase_at: new Date().toISOString() })
           .eq("id", order.patient_id);
+
+        const { data: patient } = await supabase
+          .from("patients")
+          .select("name")
+          .eq("id", order.patient_id)
+          .single();
+        const { data: userData } = await supabase.auth.admin.getUserById(
+          order.patient_id
+        );
+
+        if (patient && userData.user?.email) {
+          await sendOrderConfirmationEmail({
+            to: userData.user.email,
+            patientName: patient.name ?? "",
+            plan: order.plan as Plan,
+            concentrationMix: order.concentration_mix as ConcentrationMixItem[],
+            amount: order.amount,
+          });
+        }
       }
     }
   }
