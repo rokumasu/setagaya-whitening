@@ -145,10 +145,17 @@ create policy "patients can update own row"
   on public.patients for update
   using (auth.uid() = id);
 
+-- 会員登録時のpatients行作成はDBトリガー(handle_new_patient、security definer)が
+-- RLSを経由せずに行うため、本人によるINSERTポリシーは不要。
+-- 以前は「本人のidと一致すればINSERT可」というポリシーを用意していたが、
+-- status等の値を本人が自由に指定してINSERTできてしまう抜け穴になっていたため削除する。
 drop policy if exists "patients can insert own row" on public.patients;
-create policy "patients can insert own row"
-  on public.patients for insert
-  with check (auth.uid() = id);
+
+-- patients: 本人が更新できる列を name / phone / address のみに制限する（Phase 5, RLS見直し）。
+-- 上のUPDATEポリシーは「自分の行かどうか」しかチェックしないため、
+-- 列の制限をかけないと status（購入資格）等を本人が直接書き換えられてしまう。
+revoke update on public.patients from authenticated;
+grant update (name, phone, address) on public.patients to authenticated;
 
 -- doctor_status: 誰でも（未ログインでも）状態を閲覧できる。書き込みは管理API(service role)のみ。
 drop policy if exists "anyone can view doctor status" on public.doctor_status;
