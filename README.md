@@ -1,16 +1,19 @@
 # 世田谷ホワイトニング — Webアプリ（Phase 0）
 
 オンライン診療から始めるホームホワイトニングサービスのWebアプリです。
-[バックエンド構築ロードマップ](https://claude.ai/code/artifact/73237527-d822-4441-be64-f907c9b3bde8) の Phase 0（土台づくり）が完了した状態のプロジェクトです。
+[バックエンド構築ロードマップ](https://claude.ai/code/artifact/73237527-d822-4441-be64-f907c9b3bde8) の Phase 0（土台づくり）が完了し、**インターネット上に公開済み**の状態のプロジェクトです。
+
+公開URL: https://setagaya-whitening.vercel.app
 
 このREADMEは、**エンジニアではない方**が上から順番に進められるように書いています。
 コマンドは黒い画面（ターミナル）に入力するものです。慌てず1つずつ進めてください。
 
 ## 今の状態でできること
 
-- トップページ（LP）がこのプロジェクトの中に組み込まれている
+- トップページ（LP）が実際にインターネット上（Vercel）に公開されている
+- Supabase（データベース）のプロジェクトが作成済みで、本番環境からも接続を確認済み
 - `/api/health` にアクセスすると、Supabase（データベース）に接続できているかを確認できる
-- データベースの設計図（`supabase/schema.sql`）が用意されている
+- データベースの設計図（`supabase/schema.sql`）を実行済み（patients / doctor_status / consultations / orders の各テーブルが作成済み）
 
 まだできないこと（Phase 1以降で作ります）：会員登録・ログイン、管理画面、決済、実際のオンライン診療との連携。
 
@@ -26,7 +29,7 @@
 
 ---
 
-## 手順1: このプロジェクトをGitHubに置く
+## 手順1: このプロジェクトをGitHubに置く ✅ 完了（2026-08-23）
 
 1. GitHubにログインし、右上の「+」→「New repository」を選ぶ
 2. リポジトリ名を決める（例: `setagaya-whitening`）。Public/Privateはどちらでも良いが、迷ったら **Private** を選ぶ
@@ -45,7 +48,7 @@
 
 ---
 
-## 手順2: Supabaseプロジェクトを作る
+## 手順2: Supabaseプロジェクトを作る ✅ 完了（2026-08-23）
 
 1. https://supabase.com にログインし、「New project」を押す
 2. プロジェクト名（例: `setagaya-whitening`）、データベースのパスワード（自動生成でOK、忘れないよう控えておく）、リージョンは `Northeast Asia (Tokyo)` を選んで作成する
@@ -53,14 +56,15 @@
 4. 「New query」を押し、このプロジェクト内の `supabase/schema.sql` の中身を全部コピーして貼り付け、右下の「Run」を押す
    - 実行してエラーが出なければOK（何行か「Success」と表示されます）
    - このSQLは再実行しても安全なので、あとで内容を更新した際も同じ手順でOKです
-5. 左メニューの **Project Settings → API** を開き、次の3つの値を控える
-   - **Project URL**（例: `https://xxxxxxxxxxxx.supabase.co`）
-   - **anon public** キー
-   - **service_role** キー（こちらは絶対に人に見せたり、GitHubに載せたりしないこと）
+5. 左メニューの **Project Settings → API Keys** を開き、次の3つの値を控える
+   - **Project URL**（Project Settings → General の「Project ID」から `https://<Project ID>.supabase.co` の形で分かります）
+   - **anon public** キー（「Legacy anon, service_role API keys」タブにあります。新しい「Publishable and secret API keys」タブの値でも代用可）
+   - **service_role** キー（こちらは絶対に人に見せたり、GitHubに載せたりしないこと。「Reveal」を押すと表示されます）
+   - ※ SupabaseのUIが更新され、以前の「Project Settings → API」から「Project Settings → API Keys」に名称・場所が変わりました
 
 ---
 
-## 手順3: 環境変数を設定する（ローカルで動かす場合）
+## 手順3: 環境変数を設定する（ローカルで動かす場合） ✅ 完了（2026-08-23）
 
 1. プロジェクトのフォルダで `.env.local.example` をコピーして `.env.local` という名前のファイルを作る
 
@@ -93,7 +97,7 @@
 
 ---
 
-## 手順4: Vercelで公開する
+## 手順4: Vercelで公開する ✅ 完了（2026-08-23）
 
 1. https://vercel.com にログインし、「Add New… → Project」を選ぶ
 2. 手順1でGitHubに置いたリポジトリを選んで「Import」する
@@ -105,6 +109,8 @@
 5. 発行されたURLと `/api/health` の両方を開いて、手順3と同じように確認する
 
 これでPhase 0は完了です。インターネット上に実際にトップページが公開され、データベースとも接続できている状態になります。
+
+**公開URL: https://setagaya-whitening.vercel.app**（`/api/health` で接続確認済み）
 
 ---
 
