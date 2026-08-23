@@ -51,5 +51,6 @@ export async function saveProfile(
     return { error: "保存に失敗しました。時間をおいて再度お試しください。" };
   }
 
-  redirect("/mypage");
+  const redirectTo = String(formData.get("redirectTo") ?? "/mypage");
+  redirect(redirectTo === "/consultation" ? "/consultation" : "/mypage");
 }

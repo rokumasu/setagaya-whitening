@@ -41,7 +41,7 @@ export default async function ProfilePage() {
             ホワイトニングジェルの発送に必要な情報を入力してください。
           </p>
 
-          <ProfileForm />
+          <ProfileForm redirectTo="/consultation" />
         </div>
       </div>
     </main>

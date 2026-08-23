@@ -452,3 +452,24 @@ footer{padding:64px 0 48px; border-top:1px solid var(--line);}
 .admin-doctor-name-form{flex-direction:row; align-items:flex-end; gap:12px; margin-bottom:24px;}
 .admin-doctor-name-form .field{flex:1;}
 .admin-saved-note{font-size:13.5px; color:var(--teal-deep); margin:-16px 0 24px;}
+
+.admin-patient-list{display:flex; flex-direction:column; gap:0; margin:24px 0; border-top:1px solid var(--line);}
+.admin-patient-row{
+  display:flex; justify-content:space-between; align-items:center; gap:16px;
+  padding:16px 4px; border-bottom:1px solid var(--line); text-decoration:none; color:var(--ink);
+}
+.admin-patient-row:hover{background:var(--porcelain-alt);}
+.admin-patient-row strong{display:block; font-size:15px;}
+.admin-patient-email{display:block; font-size:12.5px; color:var(--ink-faint); margin-top:2px;}
+.admin-patient-status{font-size:12.5px; padding:5px 12px; border-radius:20px; white-space:nowrap; background:var(--porcelain-alt); color:var(--ink-faint);}
+.admin-patient-status-approved{background:var(--teal-tint); color:var(--teal-deep);}
+.admin-patient-status-recheck{background:var(--gold-tint); color:var(--gold);}
+.admin-patient-status-suspended{background:#FBEAE4; color:#B4432D;}
+
+.admin-detail-table{width:100%; border-collapse:collapse; margin:20px 0; font-size:14px;}
+.admin-detail-table th{
+  text-align:left; color:var(--ink-faint); font-weight:500; padding:10px 12px 10px 0;
+  border-bottom:1px solid var(--line); white-space:nowrap; vertical-align:top; width:1%;
+}
+.admin-detail-table td{padding:10px 0; border-bottom:1px solid var(--line); color:var(--ink);}
+.admin-section-title{font-size:16px; margin:32px 0 8px;}

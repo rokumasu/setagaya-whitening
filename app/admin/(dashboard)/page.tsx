@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { setDoctorStatus, setDoctorName, adminLogout } from "./actions";
 
@@ -82,6 +83,12 @@ export default async function AdminDashboardPage({
             </button>
           </form>
           {saved === "1" && <p className="admin-saved-note">保存しました</p>}
+
+          <div className="auth-form">
+            <Link href="/admin/patients" className="btn btn-ghost">
+              会員一覧・診療結果の入力
+            </Link>
+          </div>
 
           <form action={adminLogout} className="auth-form">
             <button type="submit" className="btn btn-ghost">

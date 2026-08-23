@@ -17,9 +17,14 @@ type ProfileFormProps = {
     addressLine2: string;
   };
   submitLabel?: string;
+  redirectTo?: string;
 };
 
-export function ProfileForm({ initialValues, submitLabel }: ProfileFormProps) {
+export function ProfileForm({
+  initialValues,
+  submitLabel,
+  redirectTo,
+}: ProfileFormProps) {
   const [state, formAction, pending] = useActionState(
     saveProfile,
     initialState
@@ -52,6 +57,7 @@ export function ProfileForm({ initialValues, submitLabel }: ProfileFormProps) {
 
   return (
     <form action={formAction} className="auth-form">
+      {redirectTo && <input type="hidden" name="redirectTo" value={redirectTo} />}
       <label className="field">
         <span>お名前</span>
         <input

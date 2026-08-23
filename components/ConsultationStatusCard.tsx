@@ -25,21 +25,21 @@ const STATUS_META: Record<
     ledClass: "status-led-online",
     desc: "ただいま歯科医師がオンライン診療に対応できます。診療は5〜10分程度で終了します。",
     buttonLabel: "今すぐ診療する",
-    buttonHref: "#pricing",
+    buttonHref: "/consultation",
   },
   busy: {
     label: "BUSY",
     ledClass: "status-led-busy",
     desc: "現在、別の患者様を診療中です。次の対応時間をご確認ください。",
     buttonLabel: "次の対応時間を見る",
-    buttonHref: "#flow",
+    buttonHref: "/consultation",
   },
   offline: {
     label: "OFFLINE",
     ledClass: "status-led-offline",
     desc: "現在、即時診療は受け付けていません。主に昼休みと診療終了後の時間帯に対応しています。",
     buttonLabel: "診療を予約する",
-    buttonHref: "#pricing",
+    buttonHref: "/consultation",
   },
 };
 

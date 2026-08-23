@@ -52,6 +52,14 @@ export default async function MyPage() {
             <p>{PATIENT_STATUS_DESCRIPTION[status]}</p>
           </div>
 
+          {(status === "unapproved" || status === "recheck") && (
+            <div className="auth-form">
+              <Link href="/consultation" className="btn btn-primary">
+                オンライン診療を受ける
+              </Link>
+            </div>
+          )}
+
           <div className="auth-form">
             <Link href="/mypage/edit" className="btn btn-ghost">
               登録情報を変更する
