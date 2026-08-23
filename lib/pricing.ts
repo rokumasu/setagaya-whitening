@@ -1,4 +1,4 @@
-export const CONCENTRATIONS = [10, 15, 20, 35, 45] as const;
+export const CONCENTRATIONS = [10, 15, 20, 35] as const;
 export type Concentration = (typeof CONCENTRATIONS)[number];
 
 export type Plan = 2 | 4 | 8;
