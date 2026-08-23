@@ -325,6 +325,11 @@ section{padding:104px 0;}
 .conc-mark .price{font-size:11px; color:var(--gold); margin-top:2px;}
 .conc-note{font-size:13.5px; color:var(--ink-soft); border-top:1px solid var(--line); padding-top:18px; margin-top:6px;}
 
+.stock-badge{display:inline-block; margin-top:6px; padding:2px 9px; border-radius:99px; font-size:11px; white-space:nowrap;}
+.stock-badge-in_stock{background:color-mix(in srgb, var(--signal-on) 16%, transparent); color:var(--signal-on);}
+.stock-badge-low_stock{background:color-mix(in srgb, var(--signal-busy) 18%, transparent); color:var(--signal-busy);}
+.stock-badge-out_of_stock{background:color-mix(in srgb, var(--signal-off) 20%, transparent); color:var(--ink-soft);}
+
 /* ==================== Pricing ==================== */
 .pricing-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:0; border:1px solid var(--line); border-radius:4px; overflow:hidden;}
 @media (max-width:920px){ .pricing-grid{grid-template-columns:1fr;} }
@@ -493,3 +498,17 @@ footer{padding:64px 0 48px; border-top:1px solid var(--line);}
 }
 .admin-order-row > div:first-child{display:flex; flex-direction:column; gap:2px;}
 .admin-order-actions{display:flex; flex-direction:column; align-items:flex-end; gap:8px;}
+
+.admin-stock-row{
+  display:flex; align-items:center; gap:12px;
+  padding:14px 4px; border-bottom:1px solid var(--line);
+}
+.admin-stock-pct{width:48px; font-size:15px;}
+.admin-stock-row select{
+  border:1px solid var(--line-strong); border-radius:4px; padding:9px 12px; font-size:14px;
+  color:var(--ink); background:var(--porcelain); font-family:var(--font-body);
+}
+.admin-stock-row input[type="number"]{
+  border:1px solid var(--line-strong); border-radius:4px; padding:9px 12px; font-size:14px;
+  color:var(--ink); background:var(--porcelain); font-family:var(--font-body); width:150px;
+}

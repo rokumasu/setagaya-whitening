@@ -3,16 +3,19 @@
 import { useActionState, useState } from "react";
 import { createCheckoutSession, type CreateOrderState } from "./actions";
 import { CONCENTRATIONS, PLANS, type Plan } from "@/lib/pricing";
+import { formatStockLabel, type StockStatus } from "@/lib/stock";
 
 const initialState: CreateOrderState = { error: null };
 
-export function OrderForm() {
+export function OrderForm({ stock }: { stock: StockStatus[] }) {
   const [state, formAction, pending] = useActionState(
     createCheckoutSession,
     initialState
   );
   const [plan, setPlan] = useState<Plan>(4);
   const packs = PLANS[plan].packs;
+
+  const stockByConcentration = new Map(stock.map((s) => [s.concentration, s]));
 
   return (
     <form action={formAction} className="auth-form">
@@ -46,11 +49,15 @@ export function OrderForm() {
             <option value="" disabled>
               選択してください
             </option>
-            {CONCENTRATIONS.map((c) => (
-              <option key={c} value={c}>
-                {c}%
-              </option>
-            ))}
+            {CONCENTRATIONS.map((c) => {
+              const s = stockByConcentration.get(c);
+              const soldOut = s?.status === "out_of_stock";
+              return (
+                <option key={c} value={c} disabled={soldOut}>
+                  {c}%（{formatStockLabel(s)}）
+                </option>
+              );
+            })}
           </select>
         </label>
       ))}

@@ -1,19 +1,30 @@
 import { SignBoardDemo } from "@/components/SignBoardDemo";
 import { ConsultationStatusCard } from "@/components/ConsultationStatusCard";
 import { createClient } from "@/lib/supabase/server";
+import { CONCENTRATIONS } from "@/lib/pricing";
+import { formatStockLabel, type StockStatus } from "@/lib/stock";
 
 export default async function Home() {
   const supabase = await createClient();
-  const { data: doctorStatus } = await supabase
-    .from("doctor_status")
-    .select("state, doctor_name")
-    .eq("id", 1)
-    .maybeSingle();
+  const [{ data: doctorStatus }, { data: stockRows }] = await Promise.all([
+    supabase
+      .from("doctor_status")
+      .select("state, doctor_name")
+      .eq("id", 1)
+      .maybeSingle(),
+    supabase
+      .from("stock_status")
+      .select("concentration, status, low_stock_count"),
+  ]);
 
   const initialStatus = {
     state: doctorStatus?.state ?? "offline",
     doctor_name: doctorStatus?.doctor_name ?? null,
   } as const;
+
+  const stockByConcentration = new Map<number, StockStatus>(
+    (stockRows ?? []).map((row) => [row.concentration, row as StockStatus])
+  );
 
   return (
     <>
@@ -89,7 +100,7 @@ export default async function Home() {
               <div className="scale-strip">
                 <div className="scale-strip-label">
                   <span>Opalescence 濃度ラインナップ</span>
-                  <span>10%〜45%</span>
+                  <span>10%〜35%</span>
                 </div>
                 <div className="scale-bar" />
                 <div className="scale-ticks">
@@ -97,7 +108,6 @@ export default async function Home() {
                   <span>15%</span>
                   <span>20%</span>
                   <span>35%</span>
-                  <span>45%</span>
                 </div>
               </div>
             </div>
@@ -119,7 +129,7 @@ export default async function Home() {
                 <span className="vn">Pricing</span>
                 <h3>濃度による追加料金なし</h3>
                 <p>
-                  10%から45%まで、すべて同一価格。高濃度をご希望の方ほどお得になる価格設計です。
+                  10%から35%まで、すべて同一価格。高濃度をご希望の方ほどお得になる価格設計です。
                 </p>
               </div>
               <div className="value">
@@ -222,7 +232,7 @@ export default async function Home() {
                 ご自宅の習慣に。
               </h2>
               <p>
-                取り扱う濃度は10%・15%・20%・35%・45%の5種類。歯科医師がオンライン診療で確認した内容をもとに、無理のない濃度からお選びいただけます。
+                取り扱う濃度は10%・15%・20%・35%の4種類。歯科医師がオンライン診療で確認した内容をもとに、無理のない濃度からお選びいただけます。
               </p>
               <p>
                 Opalescenceは2本を1パックとして販売しており、1本ごとに異なる濃度を選ぶことはできません。4本セット・8本セットでは、パック単位で濃度を組み合わせることが可能です（例：20%×2本＋35%×2本）。
@@ -241,21 +251,18 @@ export default async function Home() {
               <div className="conc-scale">
                 <div className="scale-bar" />
                 <div className="conc-marks">
-                  <div className="conc-mark">
-                    <div className="pct">10%</div>
-                  </div>
-                  <div className="conc-mark">
-                    <div className="pct">15%</div>
-                  </div>
-                  <div className="conc-mark">
-                    <div className="pct">20%</div>
-                  </div>
-                  <div className="conc-mark">
-                    <div className="pct">35%</div>
-                  </div>
-                  <div className="conc-mark">
-                    <div className="pct">45%</div>
-                  </div>
+                  {CONCENTRATIONS.map((c) => (
+                    <div className="conc-mark" key={c}>
+                      <div className="pct">{c}%</div>
+                      <div
+                        className={`stock-badge stock-badge-${
+                          stockByConcentration.get(c)?.status ?? "in_stock"
+                        }`}
+                      >
+                        {formatStockLabel(stockByConcentration.get(c))}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
               <p className="conc-note">
@@ -290,7 +297,7 @@ export default async function Home() {
                 <div className="plan-tax">税込・送料別</div>
                 <ul className="plan-feats">
                   <li>初めての方のお試しに</li>
-                  <li>濃度は10〜45%から1種類</li>
+                  <li>濃度は10〜35%から1種類</li>
                   <li>オンライン診療1回込み</li>
                 </ul>
                 <a className="btn btn-ghost" href="#">
@@ -410,7 +417,7 @@ export default async function Home() {
               <details className="faq-item">
                 <summary>濃度はどのように選べばよいですか？</summary>
                 <p className="faq-a">
-                  初めての方は低めの濃度から始めることが多いですが、最終的にはオンライン診療の中で歯科医師と相談のうえで決定します。10〜45%のいずれも追加料金はかかりません。
+                  初めての方は低めの濃度から始めることが多いですが、最終的にはオンライン診療の中で歯科医師と相談のうえで決定します。10〜35%のいずれも追加料金はかかりません。
                 </p>
               </details>
               <details className="faq-item">
@@ -418,7 +425,7 @@ export default async function Home() {
                   4本セット・8本セットで濃度を混ぜることはできますか？
                 </summary>
                 <p className="faq-a">
-                  2本単位であれば可能です。4本セットは2パックまで、8本セットは4パックまで、濃度の異なる組み合わせをお選びいただけます（例：10%×2本＋45%×2本）。1本ごとに異なる濃度を指定することはできません。
+                  2本単位であれば可能です。4本セットは2パックまで、8本セットは4パックまで、濃度の異なる組み合わせをお選びいただけます（例：10%×2本＋35%×2本）。1本ごとに異なる濃度を指定することはできません。
                 </p>
               </details>
               <details className="faq-item">

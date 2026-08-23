@@ -118,6 +118,25 @@ create table if not exists public.orders (
 comment on table public.orders is '注文。濃度の組み合わせ(concentration_mix)は自社DBのみで保持し、Stripeには渡さない。';
 
 -- --------------------------------------------------------------------------
+-- 5. stock_status — 濃度ごとの在庫表示（Phase 5）
+--    自動計算はせず、管理画面から手動で状態を切り替える簡易な「表示」用テーブル。
+-- --------------------------------------------------------------------------
+create table if not exists public.stock_status (
+  concentration     int primary key,
+  status            text not null default 'in_stock'
+                      check (status in ('in_stock', 'low_stock', 'out_of_stock')),
+  low_stock_count   int,
+  updated_at        timestamptz not null default now()
+);
+
+comment on table public.stock_status is '濃度ごとの在庫表示（在庫あり/在庫僅か/品切れ）。実際の在庫数を自動計算するものではなく、管理画面から手動で切り替える。';
+comment on column public.stock_status.low_stock_count is '在庫僅か(low_stock)のときだけ使う「残り本数」の目安。任意入力。';
+
+insert into public.stock_status (concentration, status)
+values (10, 'in_stock'), (15, 'in_stock'), (20, 'in_stock'), (35, 'in_stock')
+on conflict (concentration) do nothing;
+
+-- --------------------------------------------------------------------------
 -- インデックス
 -- --------------------------------------------------------------------------
 create index if not exists idx_consultations_patient_id on public.consultations(patient_id);
@@ -131,6 +150,7 @@ alter table public.patients enable row level security;
 alter table public.doctor_status enable row level security;
 alter table public.consultations enable row level security;
 alter table public.orders enable row level security;
+alter table public.stock_status enable row level security;
 
 -- ポリシーはこのSQLを再実行しても安全なように、一度drop してから作り直す
 
@@ -161,6 +181,12 @@ grant update (name, phone, address) on public.patients to authenticated;
 drop policy if exists "anyone can view doctor status" on public.doctor_status;
 create policy "anyone can view doctor status"
   on public.doctor_status for select
+  using (true);
+
+-- stock_status: 誰でも（未ログインでも）在庫表示を閲覧できる。書き込みは管理API(service role)のみ。
+drop policy if exists "anyone can view stock status" on public.stock_status;
+create policy "anyone can view stock status"
+  on public.stock_status for select
   using (true);
 
 -- consultations: 本人の記録だけ閲覧可能。書き込みは管理API(service role)のみ。

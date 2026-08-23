@@ -55,6 +55,17 @@ export async function createCheckoutSession(
     packConcentrations.push(raw);
   }
 
+  // 品切れの濃度が選ばれていないか、サーバー側でも再確認する
+  // （画面の非表示・disabledだけに頼らない）
+  const { data: stockRows } = await supabase
+    .from("stock_status")
+    .select("concentration, status")
+    .in("concentration", packConcentrations)
+    .eq("status", "out_of_stock");
+  if (stockRows && stockRows.length > 0) {
+    return { error: "選択された濃度は現在品切れ中です。他の濃度をお選びください。" };
+  }
+
   const concentrationMix = buildConcentrationMix(packConcentrations);
 
   // 注文の作成・更新はservice role（管理者権限）でのみ行う。

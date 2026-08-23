@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { OrderForm } from "./OrderForm";
+import type { StockStatus } from "@/lib/stock";
 
 export default async function OrderPage() {
   const supabase = await createClient();
@@ -58,6 +59,11 @@ export default async function OrderPage() {
     );
   }
 
+  const { data: stockRows } = await supabase
+    .from("stock_status")
+    .select("concentration, status, low_stock_count");
+  const stock = (stockRows ?? []) as StockStatus[];
+
   return (
     <main className="auth-page">
       <div className="auth-shell">
@@ -71,7 +77,7 @@ export default async function OrderPage() {
             本数と濃度を選択してください。2本を1パックとして、パックごとに濃度を選べます。
           </p>
 
-          <OrderForm />
+          <OrderForm stock={stock} />
         </div>
       </div>
     </main>

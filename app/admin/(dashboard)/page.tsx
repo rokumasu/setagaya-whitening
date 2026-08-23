@@ -96,6 +96,12 @@ export default async function AdminDashboardPage({
             </Link>
           </div>
 
+          <div className="auth-form">
+            <Link href="/admin/stock" className="btn btn-ghost">
+              在庫表示の管理
+            </Link>
+          </div>
+
           <form action={adminLogout} className="auth-form">
             <button type="submit" className="btn btn-ghost">
               ログアウト
