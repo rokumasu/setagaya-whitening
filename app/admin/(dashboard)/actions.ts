@@ -40,7 +40,7 @@ export async function setDoctorName(formData: FormData) {
     .eq("id", 1);
 
   revalidatePath("/admin");
-  revalidatePath("/");
+  redirect("/admin?saved=1");
 }
 
 export async function adminLogout() {

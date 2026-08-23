@@ -451,3 +451,4 @@ footer{padding:64px 0 48px; border-top:1px solid var(--line);}
 .admin-status-buttons{display:flex; flex-direction:column; gap:12px; margin:24px 0;}
 .admin-doctor-name-form{flex-direction:row; align-items:flex-end; gap:12px; margin-bottom:24px;}
 .admin-doctor-name-form .field{flex:1;}
+.admin-saved-note{font-size:13.5px; color:var(--teal-deep); margin:-16px 0 24px;}

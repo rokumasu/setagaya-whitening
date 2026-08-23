@@ -98,7 +98,7 @@ export function ConsultationStatusCard({
         </a>
       </div>
       <div className="status-foot">
-        <span>担当：{status.doctor_name ?? "オンライン診療歯科医師"}</span>
+        <span>オンライン診療歯科医師</span>
         <span>目安 5–10分</span>
       </div>
     </div>

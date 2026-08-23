@@ -7,7 +7,12 @@ const STATE_LABEL: Record<string, string> = {
   offline: "OFFLINE（受付していません）",
 };
 
-export default async function AdminDashboardPage() {
+export default async function AdminDashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ saved?: string }>;
+}) {
+  const { saved } = await searchParams;
   const supabase = await createClient();
   const { data: doctorStatus } = await supabase
     .from("doctor_status")
@@ -64,7 +69,7 @@ export default async function AdminDashboardPage() {
 
           <form action={setDoctorName} className="auth-form admin-doctor-name-form">
             <label className="field">
-              <span>本日の担当歯科医師（任意）</span>
+              <span>本日の担当歯科医師（サイトには表示されません）</span>
               <input
                 type="text"
                 name="doctorName"
@@ -76,6 +81,7 @@ export default async function AdminDashboardPage() {
               保存する
             </button>
           </form>
+          {saved === "1" && <p className="admin-saved-note">保存しました</p>}
 
           <form action={adminLogout} className="auth-form">
             <button type="submit" className="btn btn-ghost">
