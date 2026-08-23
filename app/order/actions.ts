@@ -105,7 +105,8 @@ export async function createCheckoutSession(
       success_url: `${origin}/order/success?order_id=${order.id}`,
       cancel_url: `${origin}/order`,
     });
-  } catch {
+  } catch (err) {
+    console.error("Stripe checkout session creation failed:", err);
     return {
       error: "決済ページの作成に失敗しました。時間をおいて再度お試しください。",
     };
