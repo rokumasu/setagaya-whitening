@@ -1,6 +1,20 @@
 import { SignBoardDemo } from "@/components/SignBoardDemo";
+import { ConsultationStatusCard } from "@/components/ConsultationStatusCard";
+import { createClient } from "@/lib/supabase/server";
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+  const { data: doctorStatus } = await supabase
+    .from("doctor_status")
+    .select("state, doctor_name")
+    .eq("id", 1)
+    .maybeSingle();
+
+  const initialStatus = {
+    state: doctorStatus?.state ?? "offline",
+    doctor_name: doctorStatus?.doctor_name ?? null,
+  } as const;
+
   return (
     <>
       <header>
@@ -70,32 +84,7 @@ export default function Home() {
             </div>
 
             <div>
-              <div className="status-card">
-                <div className="status-head">
-                  <span>Consultation Status</span>
-                  <span>本日の受付状況</span>
-                </div>
-                <div className="status-body">
-                  <div className="status-row">
-                    <span className="status-led" />
-                    <span className="status-label">ONLINE</span>
-                  </div>
-                  <p className="status-desc">
-                    ただいま歯科医師がオンライン診療に対応できます。診療は5〜10分程度で終了します。
-                  </p>
-                  <a
-                    className="btn btn-primary btn-sm"
-                    href="#pricing"
-                    style={{ display: "flex" }}
-                  >
-                    今すぐ診療する
-                  </a>
-                </div>
-                <div className="status-foot">
-                  <span>担当：オンライン診療歯科医師</span>
-                  <span>目安 5–10分</span>
-                </div>
-              </div>
+              <ConsultationStatusCard initialStatus={initialStatus} />
 
               <div className="scale-strip">
                 <div className="scale-strip-label">

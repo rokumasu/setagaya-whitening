@@ -202,6 +202,9 @@ header{
   animation:pulse 2.4s ease-in-out infinite;
 }
 @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.55;} }
+.status-led-online{background:var(--signal-on); box-shadow:0 0 0 4px color-mix(in srgb, var(--signal-on) 22%, transparent);}
+.status-led-busy{background:var(--signal-busy); box-shadow:0 0 0 4px color-mix(in srgb, var(--signal-busy) 22%, transparent);}
+.status-led-offline{background:var(--signal-off); box-shadow:0 0 0 4px color-mix(in srgb, var(--signal-off) 22%, transparent); animation:none;}
 .status-label{font-family:var(--font-accent); font-weight:600; font-size:19px; letter-spacing:0.02em;}
 .status-desc{font-size:14px; color:var(--ink-soft); margin-bottom:22px;}
 .status-body .btn{width:100%;}
@@ -442,3 +445,9 @@ footer{padding:64px 0 48px; border-top:1px solid var(--line);}
 .mypage-status-recheck .mypage-status-label{color:var(--gold);}
 .mypage-status-suspended{background:#FBEAE4;}
 .mypage-status-suspended .mypage-status-label{color:#B4432D;}
+
+/* ==================== Admin ==================== */
+.admin-shell{max-width:520px;}
+.admin-status-buttons{display:flex; flex-direction:column; gap:12px; margin:24px 0;}
+.admin-doctor-name-form{flex-direction:row; align-items:flex-end; gap:12px; margin-bottom:24px;}
+.admin-doctor-name-form .field{flex:1;}
