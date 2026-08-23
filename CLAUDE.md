@@ -23,25 +23,31 @@ koichiroさんには**専門用語を避けて、日本語でわかりやすく*
 
 ## 今の状況(2026年8月時点)
 
-- Phase 0(プロジェクトの土台づくり)はコードとしては完成している
-- 残っている作業: ①GitHubへのpush ②Supabaseプロジェクト作成・スキーマ実行
-  ③Vercelへのデプロイ ④動作確認
-- 詳しい手順は `README.md` に非エンジニア向けに書いてある。作業の際は必ずこれを参照し、
+- Phase 0(プロジェクトの土台づくり)・Phase 1(会員登録とステータス表示)が完了し、
+  本番環境(Vercel)で動作確認済み
+- 次はPhase 2(今すぐ診療サイン)
+- 詳しい手順・実装内容は `README.md` に非エンジニア向けに書いてある。作業の際は必ずこれを参照し、
   進んだら `README.md` の該当箇所を更新すること
+- 事業の基本仕様は `docs/master-prompt.md`(マスタープロンプト v2.0)に保管している。
+  実装内容を判断する際はこのファイルを正とする。実装の都合でマスタープロンプトの内容から
+  変更した場合は、同ファイル末尾の「実装時の変更履歴」に理由とあわせて追記すること
 
 ## 技術構成
 
 - フレームワーク: Next.js 16(App Router)+ TypeScript。破壊的変更が多いバージョンなので
   `AGENTS.md`(このファイルの1行目でimportしている)の注意事項に必ず従うこと
 - バックエンド: Supabase(PostgreSQL + Auth + Realtime)
+- 認証: Supabase Auth(メール＋パスワード。確認メール・パスワード再設定は標準のメールリンクを使用。
+  マスタープロンプトのワンタイムコード案から変更した経緯は `docs/master-prompt.md` 参照)
 - 決済: Stripe(未実装。導入時は`concentration`などの個別情報はStripeに渡さず自社DBのみで管理する設計)
 - オンライン診療: Zoom(MVPでは固定リンクでよい)
 - 環境変数: `.env.local.example` を参照。実際の値は `.env.local`(gitには含めない)
 - 主要ファイル:
   - `app/page.tsx` … トップページ
   - `app/api/health/route.ts` … Supabase接続確認用API
+  - `app/register/`, `app/login/`, `app/mypage/` など … 会員登録・ログイン・マイページ(Phase 1)
   - `lib/supabase/{client,server,admin}.ts` … 用途別のSupabase接続
-  - `supabase/schema.sql` … DB設計(patients / doctor_status / consultations / orders)
+  - `supabase/schema.sql` … DB設計(patients / doctor_status / consultations / orders、会員登録トリガー)
   - `proxy.ts` … 会員セッション維持用(Next.js 16の`middleware`相当)
 
 ## 今後のロードマップ
@@ -50,9 +56,10 @@ koichiroさんには**専門用語を避けて、日本語でわかりやすく*
 https://claude.ai/code/artifact/73237527-d822-4441-be64-f907c9b3bde8
 
 わかっている範囲:
-- Phase 0: プロジェクトの土台(今ここ)
-- Phase 1: 会員登録とステータス表示
-- Phase 2以降: オンライン診療の申込・決済(Stripe)・管理画面など
+- Phase 0: プロジェクトの土台 — 完了
+- Phase 1: 会員登録とステータス表示 — 完了
+- Phase 2: 今すぐ診療サイン(今ここ)
+- Phase 3以降: 診療〜承認、決済(Stripe)、管理画面など
   → 着手前に必ず上記ロードマップ資料で詳細を確認すること(このメモに正確な内容がなければ推測で進めない)
 
 **このプロジェクトの対象範囲は「HPの実装まで」。集客・問い合わせ対応・経理などの事業運営面は対象外。**

@@ -1,7 +1,7 @@
-# 世田谷ホワイトニング — Webアプリ（Phase 0）
+# 世田谷ホワイトニング — Webアプリ（Phase 1まで完了）
 
 オンライン診療から始めるホームホワイトニングサービスのWebアプリです。
-[バックエンド構築ロードマップ](https://claude.ai/code/artifact/73237527-d822-4441-be64-f907c9b3bde8) の Phase 0（土台づくり）が完了し、**インターネット上に公開済み**の状態のプロジェクトです。
+[バックエンド構築ロードマップ](https://claude.ai/code/artifact/73237527-d822-4441-be64-f907c9b3bde8) の Phase 0（土台づくり）・Phase 1（会員登録とステータス表示）が完了し、**インターネット上に公開済み**の状態のプロジェクトです。
 
 公開URL: https://setagaya-whitening.vercel.app
 
@@ -14,8 +14,10 @@
 - Supabase（データベース）のプロジェクトが作成済みで、本番環境からも接続を確認済み
 - `/api/health` にアクセスすると、Supabase（データベース）に接続できているかを確認できる
 - データベースの設計図（`supabase/schema.sql`）を実行済み（patients / doctor_status / consultations / orders の各テーブルが作成済み）
+- **会員登録・ログインができる**（`/register` → 確認メール → `/register/profile` → `/mypage`。詳しくは下記「Phase 1」参照）
+- マイページで自分のステータス確認・登録情報の変更ができる
 
-まだできないこと（Phase 1以降で作ります）：会員登録・ログイン、管理画面、決済、実際のオンライン診療との連携。
+まだできないこと（Phase 2以降で作ります）：「今すぐ診療」表示のリアルタイム連携、オンライン診療、管理画面、決済。
 
 ---
 
@@ -114,24 +116,54 @@
 
 ---
 
+---
+
+## Phase 1: 会員登録とステータス表示 ✅ 完了（2026-08-23）
+
+会員登録（事前スクリーニング・年齢確認つき）とログイン、マイページを実装しました。
+
+- `/register` … 会員登録（メール・パスワード・生年月日・事前スクリーニング3項目）。18歳未満やスクリーニング不適合の場合はここで登録できない
+- 登録すると確認メールが届く。メール内のリンクをクリックすると本登録が完了する
+- `/register/profile` … お届け先情報（お名前・電話番号・住所。郵便番号を入れると都道府県・市区町村が自動入力される）
+- `/login` … ログイン（メール＋パスワード）
+- `/forgot-password` / `/reset-password` … パスワードを忘れた場合の再設定
+- `/mypage` … 現在のステータス（登録済み・診療前 / 購入可能 / 要再確認 / 利用停止）を表示。「登録情報を変更する」から住所等をあとから変更できる
+
+データベース側では、会員登録が完了した瞬間に自動で会員情報（`patients`）の行を作るしくみ（トリガー）を追加しています（`supabase/schema.sql` 参照）。
+
+**動作確認方法**: `/register` から実際に会員登録し、届いたメールのリンクを開いて `/register/profile` → `/mypage` まで進めればOKです。
+
+---
+
 ## このプロジェクトの中身
 
 ```
 app/
-  page.tsx          … トップページ（LP）
-  layout.tsx        … 全ページ共通の設定（フォント・メタ情報など）
-  globals.css       … LP全体のデザイン（色・フォント・レイアウト）
-  api/health/       … Supabase接続確認用のAPI
+  page.tsx              … トップページ（LP）
+  layout.tsx            … 全ページ共通の設定（フォント・メタ情報など）
+  globals.css           … サイト全体のデザイン（色・フォント・レイアウト）
+  api/health/           … Supabase接続確認用のAPI
+  register/             … 会員登録（STEP1: メール・パスワード・生年月日・スクリーニング）
+  register/profile/     … 会員登録STEP2（お届け先情報の入力）
+  login/                … ログイン
+  forgot-password/      … パスワード再設定メールの送信
+  reset-password/       … 新しいパスワードの設定
+  auth/confirm/         … 確認メール・パスワード再設定メールのリンク先（セッションの確立）
+  mypage/                … マイページ（ステータス表示・登録情報の変更・ログアウト）
 components/
-  SignBoardDemo.tsx … 「今すぐ診療」機能の説明用デモ（クリックで状態が切り替わる）
-lib/supabase/
-  client.ts         … ブラウザから使うSupabase接続（今後の会員ログイン等で使用）
-  server.ts         … サーバーから使うSupabase接続（ログイン中の会員として読み書き）
-  admin.ts          … 管理者権限のSupabase接続（/admin機能などサーバー専用。絶対にブラウザに渡さない）
-proxy.ts            … 会員のログインセッションを維持する仕組み（Phase 1から本格的に使用）
-supabase/schema.sql … データベースの設計図（patients / doctor_status / consultations / orders）
+  SignBoardDemo.tsx      … 「今すぐ診療」機能の説明用デモ（クリックで状態が切り替わる）
+lib/
+  age.ts                 … 生年月日から満年齢を計算
+  patientStatus.ts       … 会員ステータスの日本語表示
+  postalLookup.ts        … 郵便番号から住所を検索（zipcloud API）
+  supabase/
+    client.ts            … ブラウザから使うSupabase接続
+    server.ts             … サーバーから使うSupabase接続（ログイン中の会員として読み書き）
+    admin.ts              … 管理者権限のSupabase接続（/admin機能などサーバー専用。絶対にブラウザに渡さない）
+proxy.ts                … 会員のログインセッションを維持する仕組み
+supabase/schema.sql     … データベースの設計図（patients / doctor_status / consultations / orders、会員登録トリガー）
 ```
 
 ## 次のフェーズ
 
-バックエンド構築ロードマップに沿って、Phase 1（会員登録とステータス表示）から続けます。次にAIとの会話で「Phase 1から始めよう」と伝えれば続きに着手できます。
+バックエンド構築ロードマップに沿って、Phase 2（今すぐ診療サイン）に進みます。「Phase 2から始めよう」と伝えれば続きに着手できます。
