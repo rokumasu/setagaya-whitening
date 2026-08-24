@@ -300,7 +300,7 @@ export default async function Home() {
                   <li>濃度は10〜35%から1種類</li>
                   <li>オンライン診療1回込み</li>
                 </ul>
-                <a className="btn btn-ghost" href="#">
+                <a className="btn btn-ghost" href="/register">
                   このプランで診療を予約
                 </a>
               </div>
@@ -319,7 +319,7 @@ export default async function Home() {
                   <li>例：20%×2本＋35%×2本</li>
                   <li>オンライン診療1回込み</li>
                 </ul>
-                <a className="btn btn-primary" href="#">
+                <a className="btn btn-primary" href="/register">
                   このプランで診療を予約
                 </a>
               </div>
@@ -338,7 +338,7 @@ export default async function Home() {
                   <li>ホワイトニング歯磨き粉 1本プレゼント</li>
                   <li>オンライン診療1回込み</li>
                 </ul>
-                <a className="btn btn-ghost" href="#">
+                <a className="btn btn-ghost" href="/register">
                   このプランで診療を予約
                 </a>
               </div>
