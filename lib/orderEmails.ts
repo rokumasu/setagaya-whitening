@@ -50,7 +50,7 @@ export async function sendOrderConfirmationEmail({
 以下の内容でご注文とお支払いを承りました。
 
 商品: ${productLine}
-金額: ${amount.toLocaleString()}円（税込・送料別）
+金額: ${amount.toLocaleString()}円（税込・送料込み）
 
 発送準備が整い次第、改めてご連絡いたします。
 今しばらくお待ちくださいませ。

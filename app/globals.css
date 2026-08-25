@@ -307,6 +307,15 @@ section{padding:104px 0;}
   .sign-btn{grid-area:btn; justify-self:start; margin-top:6px;}
 }
 
+.reserve-block{margin-top:44px; padding-top:44px; border-top:1px solid var(--line);}
+.reserve-block h3{font-size:20px; margin-top:14px; color:var(--ink);}
+.reserve-block p.lead{color:var(--ink-soft); margin-top:12px; font-size:15px; max-width:48ch;}
+.reserve-panel{
+  background:var(--card); border:1px solid var(--line); border-radius:4px;
+  padding:20px; margin-top:26px; overflow-x:auto;
+}
+.timerex-embed{min-width:280px;}
+
 /* ==================== Product / concentration ==================== */
 .product-grid{display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center;}
 @media (max-width:920px){ .product-grid{grid-template-columns:1fr; gap:40px;} }
@@ -512,3 +521,29 @@ footer{padding:64px 0 48px; border-top:1px solid var(--line);}
   border:1px solid var(--line-strong); border-radius:4px; padding:9px 12px; font-size:14px;
   color:var(--ink); background:var(--porcelain); font-family:var(--font-body); width:150px;
 }
+
+/* ==================== Legal pages (特商法・プライバシーポリシー) ==================== */
+.legal-page{padding:56px 0 96px;}
+.legal-page .wrap{max-width:760px;}
+.legal-back{
+  display:inline-block; font-size:13.5px; color:var(--ink-soft); text-decoration:none;
+  margin-bottom:28px;
+}
+.legal-back:hover{color:var(--teal);}
+.legal-page h1{font-size:26px; margin-bottom:32px;}
+.legal-lead{color:var(--ink-soft); font-size:15px; margin-bottom:36px;}
+.legal-section{margin-bottom:32px;}
+.legal-section h2{font-size:16.5px; margin-bottom:12px; color:var(--ink);}
+.legal-section p{color:var(--ink-soft); font-size:14.5px; line-height:1.8; margin-bottom:10px;}
+.legal-section ul{color:var(--ink-soft); font-size:14.5px; line-height:1.9; padding-left:20px; margin-bottom:10px;}
+.legal-section li{margin-bottom:4px;}
+.legal-date{color:var(--ink-faint); font-size:13px; margin-top:40px;}
+
+.legal-table{border-top:1px solid var(--line);}
+.legal-row{
+  display:grid; grid-template-columns:200px 1fr; gap:20px;
+  padding:18px 0; border-bottom:1px solid var(--line);
+}
+@media (max-width:640px){ .legal-row{grid-template-columns:1fr; gap:6px;} }
+.legal-row dt{font-size:13.5px; color:var(--ink-faint); font-weight:600;}
+.legal-row dd{font-size:14.5px; color:var(--ink); line-height:1.8;}

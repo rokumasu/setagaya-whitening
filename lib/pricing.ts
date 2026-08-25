@@ -13,6 +13,13 @@ export function isValidPlan(value: unknown): value is Plan {
   return value === 2 || value === 4 || value === 8;
 }
 
+export const SHIPPING_FEE = 600;
+export const FREE_SHIPPING_THRESHOLD = 8000;
+
+export function getShippingFee(productAmount: number): number {
+  return productAmount >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+}
+
 export function isValidConcentration(value: unknown): value is Concentration {
   return CONCENTRATIONS.includes(value as Concentration);
 }

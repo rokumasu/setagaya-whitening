@@ -7,6 +7,7 @@ import { createStripeClient } from "@/lib/stripe";
 import {
   PLANS,
   buildConcentrationMix,
+  getShippingFee,
   isValidConcentration,
   isValidPlan,
   type Concentration,
@@ -67,6 +68,8 @@ export async function createCheckoutSession(
   }
 
   const concentrationMix = buildConcentrationMix(packConcentrations);
+  const shippingFee = getShippingFee(plan.amount);
+  const totalAmount = plan.amount + shippingFee;
 
   // 注文の作成・更新はservice role（管理者権限）でのみ行う。
   // 通常の会員セッションには orders への書き込み権限を与えていない。
@@ -78,7 +81,7 @@ export async function createCheckoutSession(
       patient_id: user.id,
       plan: planRaw,
       concentration_mix: concentrationMix,
-      amount: plan.amount,
+      amount: totalAmount,
       payment_status: "pending",
     })
     .select("id")
@@ -110,6 +113,18 @@ export async function createCheckoutSession(
           },
           quantity: 1,
         },
+        ...(shippingFee > 0
+          ? [
+              {
+                price_data: {
+                  currency: "jpy",
+                  product_data: { name: "送料・梱包料" },
+                  unit_amount: shippingFee,
+                },
+                quantity: 1,
+              },
+            ]
+          : []),
       ],
       client_reference_id: order.id,
       metadata: { order_id: order.id, patient_id: user.id },

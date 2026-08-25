@@ -1,5 +1,6 @@
 import { SignBoardDemo } from "@/components/SignBoardDemo";
 import { ConsultationStatusCard } from "@/components/ConsultationStatusCard";
+import { TimeRexBooking } from "@/components/TimeRexBooking";
 import { createClient } from "@/lib/supabase/server";
 import { CONCENTRATIONS } from "@/lib/pricing";
 import { formatStockLabel, type StockStatus } from "@/lib/stock";
@@ -143,7 +144,7 @@ export default async function Home() {
                 <span className="vn">Delivery</span>
                 <h3>ご自宅に直接お届け</h3>
                 <p>
-                  購入後、指定のご住所へ配送します。送料はお客様のご負担となります。
+                  購入後、指定のご住所へ配送します。送料・梱包料は600円(税込)、8,000円以上のご購入で送料無料です。
                 </p>
               </div>
             </div>
@@ -218,6 +219,17 @@ export default async function Home() {
 
               <SignBoardDemo />
             </div>
+
+            <div className="reserve-block">
+              <span className="eyebrow">Reservation</span>
+              <h3>都合の良い日時を選んで予約する</h3>
+              <p className="lead">
+                今すぐの対応が難しい時間帯でも、ご希望の日時を選んでオンライン診療をご予約いただけます。
+              </p>
+              <div className="reserve-panel">
+                <TimeRexBooking />
+              </div>
+            </div>
           </div>
         </section>
 
@@ -281,7 +293,7 @@ export default async function Home() {
               <span className="eyebrow">Pricing</span>
               <h2>本数で選ぶ、シンプルな3プラン。</h2>
               <p>
-                すべて2本単位でのセット販売です。価格は濃度にかかわらず一律。送料は別途お客様のご負担となります。
+                すべて2本単位でのセット販売です。価格は濃度にかかわらず一律。送料・梱包料は600円(税込)、8,000円以上のご購入で送料無料です。
               </p>
             </div>
 
@@ -294,7 +306,7 @@ export default async function Home() {
                   <span className="num">3,980</span>
                   <span className="yen">円</span>
                 </div>
-                <div className="plan-tax">税込・送料別</div>
+                <div className="plan-tax">税込・送料別(600円)</div>
                 <ul className="plan-feats">
                   <li>初めての方のお試しに</li>
                   <li>濃度は10〜35%から1種類</li>
@@ -313,7 +325,7 @@ export default async function Home() {
                   <span className="num">6,980</span>
                   <span className="yen">円</span>
                 </div>
-                <div className="plan-tax">税込・送料別</div>
+                <div className="plan-tax">税込・送料別(600円)</div>
                 <ul className="plan-feats">
                   <li>最も選ばれている本数</li>
                   <li>例：20%×2本＋35%×2本</li>
@@ -332,10 +344,10 @@ export default async function Home() {
                   <span className="num">13,480</span>
                   <span className="yen">円</span>
                 </div>
-                <div className="plan-tax">税込・送料別</div>
+                <div className="plan-tax">税込・送料無料</div>
                 <ul className="plan-feats">
                   <li>1本あたりの単価が最も低い</li>
-                  <li>ホワイトニング歯磨き粉 1本プレゼント</li>
+                  <li>8,000円以上のご購入で送料無料</li>
                   <li>オンライン診療1回込み</li>
                 </ul>
                 <a className="btn btn-ghost" href="/register">
@@ -437,7 +449,7 @@ export default async function Home() {
               <details className="faq-item">
                 <summary>送料はかかりますか？</summary>
                 <p className="faq-a">
-                  送料はお客様のご負担となります。購入手続きの際に金額を明示いたします。
+                  送料・梱包料として600円（税込）をいただいております。合計8,000円以上のご購入で送料無料になります。
                 </p>
               </details>
             </div>
@@ -517,13 +529,13 @@ export default async function Home() {
               <h4>Legal</h4>
               <ul>
                 <li>
-                  <a href="#">運営会社</a>
+                  <a href="/legal">運営会社</a>
                 </li>
                 <li>
-                  <a href="#">特定商取引法に基づく表記</a>
+                  <a href="/legal">特定商取引法に基づく表記</a>
                 </li>
                 <li>
-                  <a href="#">プライバシーポリシー</a>
+                  <a href="/privacy">プライバシーポリシー</a>
                 </li>
               </ul>
             </div>

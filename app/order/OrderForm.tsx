@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { createCheckoutSession, type CreateOrderState } from "./actions";
-import { CONCENTRATIONS, PLANS, type Plan } from "@/lib/pricing";
+import { CONCENTRATIONS, PLANS, getShippingFee, type Plan } from "@/lib/pricing";
 import { formatStockLabel, type StockStatus } from "@/lib/stock";
 
 const initialState: CreateOrderState = { error: null };
@@ -14,6 +14,8 @@ export function OrderForm({ stock }: { stock: StockStatus[] }) {
   );
   const [plan, setPlan] = useState<Plan>(4);
   const packs = PLANS[plan].packs;
+  const shippingFee = getShippingFee(PLANS[plan].amount);
+  const totalAmount = PLANS[plan].amount + shippingFee;
 
   const stockByConcentration = new Map(stock.map((s) => [s.concentration, s]));
 
@@ -33,7 +35,7 @@ export function OrderForm({ stock }: { stock: StockStatus[] }) {
               />
               <span>
                 {PLANS[p].label} — {PLANS[p].amount.toLocaleString()}円
-                {p === 8 && "（歯磨き粉プレゼント）"}
+                {getShippingFee(PLANS[p].amount) === 0 && "（送料無料）"}
               </span>
             </label>
           ))}
@@ -63,8 +65,10 @@ export function OrderForm({ stock }: { stock: StockStatus[] }) {
       ))}
 
       <p className="auth-footnote" style={{ textAlign: "left", margin: 0 }}>
-        価格は税込・送料別です。合計金額:{" "}
-        <strong>{PLANS[plan].amount.toLocaleString()}円</strong>
+        価格は税込です。送料・梱包料:{" "}
+        {shippingFee > 0 ? `${shippingFee.toLocaleString()}円` : "無料"}
+        <br />
+        合計金額: <strong>{totalAmount.toLocaleString()}円</strong>
       </p>
 
       {state.error && <p className="auth-error">{state.error}</p>}
